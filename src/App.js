@@ -1,61 +1,61 @@
 import './App.css';
+import Navbar from './components/Navbar';
+import Card from './components/Card';
+import { useEffect, useState } from "react";
+import UploadForm from './components/UploadForm';
+
+const photos = [
+  'https://picsum.photos/id/1001/200/200',
+  'https://picsum.photos/id/1002/200/200',
+  'https://picsum.photos/id/1003/200/200',
+  'https://picsum.photos/id/1004/200/200',
+  'https://picsum.photos/id/1005/200/200',
+  'https://picsum.photos/id/1006/200/200',
+]
 
 function App() {
+  const [count, setCount] = useState();
+  const [input, setInput] = useState({title:null, file:null, path:null});
+  const [items, setItems] = useState(photos);
+  const [isCollapsed, collapse] = useState(false);
+  const toggle = () => collapse(!isCollapsed);
+  const handleOnChange = (e)=> {
+    if(e.target.value === 'file'){
+      setInput({...input,title: e.target.value, file: e.target.files[0], path: URL.createObjectURL(e.target.files[0])})
+    }
+    else{
+      setInput({...input, title: e.target.value})
+    }
+    
+  }
+  const handleOnSubmit = (e)=> {
+    e.preventDefault();
+    setItems([input.path,...items]);
+  }
+
+  useEffect(()=>{
+    setCount(`you have ${items.length} image${items.length>1 ?'s':''}`)
+  }, [items])
+
   return (
     <>
-     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled">Disabled</a>
-        </li>
-      </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</nav>
-    <div class="container text-center mt-5">
-      <h1>Gallery</h1>
-      <div className = "row">
-        {Array.apply(null,{length:9}).map(() => {
- return(
-  <div className ="col mb-5">
-  <div class="card" style={{width: '18rem'}}>
- <img src="https://via.placeholder.com/200" class="card-img-top" alt="image" />
-</div>
-</div>
- )
-        })}
-     
+      <Navbar />
+      <div className="container text-center mt-5">
+        <button className='btn btn-success float-end' onClick={toggle}>+Add</button>
+        <UploadForm 
+        input = {input}
+        isVisible = {isCollapsed}
+        onChange = {handleOnChange}
+        onSubmit = {handleOnSubmit}/>
+        {count}
+        <h1>Gallery</h1>
+        <div className="row">
+          {items.map((photo, index) => <Card key={index} src={photo} />)}
+
+        </div>
       </div>
-    </div>
     </>
-   
+
   );
 }
 
